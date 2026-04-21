@@ -14,9 +14,41 @@ st.markdown("""
     /* Main Background */
     .stApp {
         background-color: #ffffff;
-        color: #1f2937;
+        color: #0f172a;
     }
     
+    /* Ensure all text/markdown is dark for readability */
+    div[data-testid="stMarkdownContainer"] p, 
+    div[data-testid="stWidgetLabel"] p, 
+    label, 
+    .stSelectbox label, 
+    .stRadio label,
+    h1, h2, h3, h4 {
+        color: #0f172a !important; /* Deep Slate */
+        font-weight: 600 !important;
+    }
+
+    /* Metric Styling */
+    [data-testid="stMetricValue"] {
+        color: #2563eb !important;
+        font-weight: 800 !important;
+    }
+    
+    [data-testid="stMetricLabel"] p {
+        color: #475569 !important;
+        font-weight: 700 !important;
+    }
+
+    /* Tabs */
+    .stTabs [data-baseweb="tab-highlight"] {
+        background-color: #2563eb !important;
+    }
+    
+    /* Table Rows */
+    .stTable td {
+        color: #1e293b !important;
+    }
+
     /* Header Container */
     .stHeader {
         background: #f8fafc;
@@ -25,105 +57,15 @@ st.markdown("""
         margin-bottom: 2rem;
     }
 
-    /* Modern Title */
-    h1 {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #1e3a8a;
+    /* Attractive Buttons */
+    .stButton>button {
+        background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%) !important;
+        color: white !important;
+        border-radius: 0.5rem;
         font-weight: 700;
-        text-align: center;
-        letter-spacing: -0.025em;
-    }
-    
-    h2, h3 {
-        color: #1e40af;
-    }
-
-    /* Attractive Buttons (Standard and Download) */
-    .stButton>button, .stDownloadButton>button {
-        width: 100%;
-        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-        color: white !important;
-        border: none;
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.5rem;
-        font-weight: 600;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    
-    .stButton>button:hover, .stDownloadButton>button:hover {
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        transform: translateY(-1px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-        color: white !important;
-    }
-
-    /* Card-like containers for inputs */
-    [data-testid="stVerticalBlock"] > div:has(div.stNumberInput) {
-        background: #f1f5f9;
-        padding: 1.5rem;
-        border-radius: 0.75rem;
-        border: 1px solid #e2e8f0;
-    }
-
-    /* Metric Styling */
-    [data-testid="stMetric"] {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        padding: 1rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    
-    [data-testid="stMetricValue"] {
-        color: #2563eb !important;
-        font-weight: 800;
-    }
-
-    /* Ensure all text/markdown is dark for readability */
-    div[data-testid="stMarkdownContainer"] p, 
-    div[data-testid="stWidgetLabel"] p, 
-    label, 
-    .stSelectbox label, 
-    .stRadio label {
-        color: #111827 !important;
-        font-weight: 500;
-    }
-
-    /* Tabs */
-    .stTabs [data-baseweb="tab-list"] {
-        background-color: #f8fafc;
-        border-radius: 0.5rem;
-        padding: 0.5rem;
-    }
-
-    .stTabs [data-baseweb="tab"] {
-        color: #64748b;
-    }
-
-    .stTabs [aria-selected="true"] {
-        color: #2563eb !important;
-        background-color: white !important;
-        border-radius: 0.25rem;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-    }
-
-    /* Table Customization */
-    .stTable {
-        border-radius: 0.5rem;
-        border: 1px solid #e2e8f0;
-    }
-    
-    /* Force table text to be dark */
-    .stTable td, .stTable th {
-        color: #1f2937 !important;
-        font-weight: 500;
     }
 </style>
+
 """, unsafe_allow_html=True)
 
 st.title(" OS Simulator")
@@ -161,11 +103,10 @@ with tab1:
                 st.subheader(f"Results: {cache_algo}")
                 
                 # Metrics
-                m1, m2, m3, m4 = st.columns(4)
+                m1, m2, m3 = st.columns(3)
                 m1.metric("Hits", hits)
                 m2.metric("Faults", faults)
                 m3.metric("Hit Ratio", f"{(hits/len(pages)):.2f}")
-                m4.metric("Miss Ratio", f"{(faults/len(pages)):.2f}")
                 
                 # Visualization Table
                 st.write("### Step-by-Step Execution")
@@ -173,22 +114,11 @@ with tab1:
                 for step in history:
                     row = {"Page": step["Page"]}
                     for i in range(frame_size):
-                        row[f"Frame {i+1}"] = step["Frames"][i] if i < len(step["Frames"]) else "-"
-                    
-                    # Add Emoji for status visibility
-                    if step["Status"] == "Hit":
-                        row["Status"] = "✅ Hit"
-                    else:
-                        row["Status"] = "❌ Miss"
-                        
+                        row[f"F{i+1}"] = str(step["Frames"][i]) if i < len(step["Frames"]) else "-"
+                    row["Status"] = "✅ Hit" if step["Status"] == "Hit" else "❌ Miss"
                     df_data.append(row)
                 
-                df = pd.DataFrame(df_data)
-                st.table(df)
-                
-                # Download
-                csv = df.to_csv(index=False).encode('utf-8')
-                st.download_button("Export Results to CSV", csv, "cache_results.csv", "text/csv")
+                st.dataframe(pd.DataFrame(df_data), use_container_width=True)
                 
         except ValueError:
             st.error("Invalid Input! Please enter numbers separated by commas.")
