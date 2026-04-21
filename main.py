@@ -120,6 +120,11 @@ with tab1:
                 
                 st.dataframe(pd.DataFrame(df_data), use_container_width=True)
                 
+                # Export
+                df_export = pd.DataFrame(df_data)
+                csv_cache = df_export.to_csv(index=False).encode('utf-8')
+                st.download_button("📥 Export Simulation Results (CSV)", csv_cache, f"cache_{cache_algo.lower()}_results.csv", "text/csv")
+                
         except ValueError:
             st.error("Invalid Input! Please enter numbers separated by commas.")
 
@@ -188,7 +193,7 @@ with tab2:
                 # Export
                 df_disk = pd.DataFrame({"Step": range(len(sequence)), "Track": sequence})
                 csv_disk = df_disk.to_csv(index=False).encode('utf-8')
-                st.download_button("Export Path to CSV", csv_disk, "disk_results.csv", "text/csv")
+                st.download_button("📥 Export Simulation Results (CSV)", csv_disk, "disk_results.csv", "text/csv")
                 
         except ValueError:
             st.error("Invalid Input! Please enter numbers separated by commas.")
@@ -232,6 +237,11 @@ with tab3:
             )
             st.plotly_chart(fig)
 
+            # Export
+            df_comp_cache = pd.DataFrame(list(results.items()), columns=["Algorithm", "Page Faults"])
+            csv_comp_cache = df_comp_cache.to_csv(index=False).encode('utf-8')
+            st.download_button("📥 Export Comparison Data (CSV)", csv_comp_cache, "cache_comparison.csv", "text/csv")
+
     else:
         d_input = st.text_input("Request Queue", "98, 183, 37, 122, 14, 124, 65, 67", key="d_comp")
         d_head = st.number_input("Initial Head", value=53, key="h_comp")
@@ -265,3 +275,8 @@ with tab3:
                 yaxis=dict(tickfont=dict(color='#111827')),
             )
             st.plotly_chart(fig)
+            
+            # Export
+            df_comp_disk = pd.DataFrame(list(results.items()), columns=["Algorithm", "Total Head Movement"])
+            csv_comp_disk = df_comp_disk.to_csv(index=False).encode('utf-8')
+            st.download_button("📥 Export Comparison Data (CSV)", csv_comp_disk, "disk_comparison.csv", "text/csv")
